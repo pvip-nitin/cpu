@@ -16,6 +16,13 @@ module memtop
 
 reg [DATA_WIDTH-1:0] mem[2^ADDR_WIDTH];
 
+initial begin
+  @(posedge rstn);
+  @(negedge clk);
+  $readmemh("tools/test.hex", mem);
+  `include "tools/test.data.sv"
+end
+
 reg [ADDR_WIDTH-1:0] wa_ro_start;
 reg [ADDR_WIDTH-1:0] wa_ro_end;
 
