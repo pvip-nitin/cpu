@@ -13,7 +13,7 @@ module divider#(parameter N=16)(
 );
   
   
-  reg [N-1:0] D, d, Counter;
+  reg [N-1:0] D, d, Counter, RefCounter, refD, refd;
   bit [N-1:0] Dr; 
   
   typedef enum {START, COMPARE} state;
@@ -36,15 +36,15 @@ module divider#(parameter N=16)(
       RefCounter <= 0;
       Counter <= 1;
     end else begin
-      if(state == START)begin
+      if(s === START) begin
         //
         if(req)begin
           if(Divisor == 0)begin
             exception <= 1'b1;
             ready <= 1'b1;
-            state <= START;  
-          end else 
-            state <= COMPARE;
+            s <= START;  
+          end else begin
+            s <= COMPARE;
             //Data
             refD <= Dividend;
             refd <= Divisor;
@@ -52,10 +52,10 @@ module divider#(parameter N=16)(
             d <= Divisor;
           end
         end else begin
-          state <= START;
+          s <= START;
           ready <= 1'b0;
         end
-      end else if(state == COMPARE) begin
+     end else if(s == COMPARE) begin
         if(e || g)begin
           // Divisor =< Dividend
           D <= Dr;
@@ -73,7 +73,7 @@ module divider#(parameter N=16)(
             /// Sum of Counter values will be output.
              Q <= RefCounter;
              ready <= 1'b1;
-             state <= START;
+             s <= START;
            end
         end
       end
