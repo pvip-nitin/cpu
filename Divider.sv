@@ -14,7 +14,7 @@ module divider#(parameter N=16)(
   
   
   reg [N-1:0] D, d, Counter, RefCounter, refD, refd;
-  bit [N-1:0] Dr; 
+  bit [N-1:0] Dr, temp1, temp2, temp3; 
   
   typedef enum {START, COMPARE} state;
   
