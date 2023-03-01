@@ -69,7 +69,7 @@ module divider#(parameter N=16)(
             //D <= refD - refd*Counter;
             D <= temp2;
             refD <= temp2;        
-           else begin 
+            end else begin 
             /// Sum of Counter values will be output.
              Q <= RefCounter;
              ready <= 1'b1;
