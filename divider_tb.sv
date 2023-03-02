@@ -7,9 +7,17 @@ module top;
   bit clk, rstn, req, ready;
   bit [N-1:0] D, d, Q, R;
   
-  assign clk = #5 ~clk; 
+  //assign clk = #5 ~clk; 
+  initial begin
+    forever begin
+      clk = 0;
+      #5;
+      clk = 1;
+      #5;
+    end
+  end
   
-  Divider Div#(N)(
+  Divider#(N) Div(
     .clk(clk),
     .rstn(rstn),
     .req(req),
@@ -17,18 +25,19 @@ module top;
     .Divisor(d),
     .Q(Q),
     .R(R),
-    .ready(ready)
+    .ready(ready),
+    .exception()
   );
   
   initial begin
     $monitor("%b, %d",ready, Q);
-    rst = 0;
+    rstn = 0;
     @(negedge clk);
     @(negedge clk);
-    rst = 1;
+    rstn = 1;
     req = 1;
-    D = 65000;
-    d = 6700;
+    D = 16'hFFFF;
+    d = 2;
     fork 
       @(posedge ready);
       repeat(10000) begin
@@ -41,4 +50,9 @@ module top;
   end
   
   
+  initial
+    begin
+      $dumpfile("abc.vcd");
+      $dumpvars();
+    end
 endmodule
