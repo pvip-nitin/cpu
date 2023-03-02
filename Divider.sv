@@ -53,6 +53,12 @@ module Divider#(parameter N=16)(
             s <= START;
             Q <= Dividend;
             Num_cycles <= 1;
+          /*end else if(Divisor == 2) begin
+            exception <= 1'b0;
+            ready <= 1'b1;
+            s <= START;
+            Q <= {1'b0, Dividend[N-1:1]};
+            Num_cycles <= 1;*/
           end else begin
             s <= COMPARE;
             //Data
