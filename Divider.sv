@@ -1,6 +1,6 @@
 //Divider
 
-module divider#(parameter N=16)(
+module Divider#(parameter N=16)(
   input clk,
   input rstn,
   input req,
@@ -13,7 +13,7 @@ module divider#(parameter N=16)(
 );
   
   
-  reg [N-1:0] D, d, Counter, RefCounter, refD, refd;
+  reg [N-1:0] D, d, Counter, RefCounter, refD, refd, Num_cycles;
   bit [N-1:0] Dr, temp1, temp2, temp3; 
   
   typedef enum {START, COMPARE} state;
@@ -29,20 +29,30 @@ module divider#(parameter N=16)(
     .E(e)
   );
   
-  
   always_ff @(posedge clk or negedge rstn) begin
     if(!rstn) begin
       s <= START;
       RefCounter <= 0;
-      Counter <= 1;
+      Counter <= 0;
+      exception <= 0;
+      ready <= 0;
+      Num_cycles <= 0;
     end else begin
       if(s === START) begin
         //
+        
         if(req)begin
           if(Divisor == 0)begin
             exception <= 1'b1;
             ready <= 1'b1;
             s <= START;  
+            Num_cycles <= 1;
+          end else if(Divisor == 1) begin
+            exception <= 1'b0;
+            ready <= 1'b1;
+            s <= START;
+            Q <= Dividend;
+            Num_cycles <= 1;
           end else begin
             s <= COMPARE;
             //Data
@@ -50,37 +60,40 @@ module divider#(parameter N=16)(
             refd <= Divisor;
             D <= Dividend;
             d <= Divisor;
+            Num_cycles <= 1;
           end
         end else begin
           s <= START;
           ready <= 1'b0;
+          Num_cycles <= 0;
         end
      end else if(s == COMPARE) begin
+       	Num_cycles <= Num_cycles + 1;
         if(e || g)begin
           // Divisor =< Dividend
           D <= Dr;
-          Counter <= Counter << 1;
+          Counter <= (Counter == 0) ? 1 : Counter << 1;//Bug: Counter << 1;
         end else begin
           // Divisor > Dividend          
-          if(Counter != 1) begin
+          if(Counter != 0) begin
             //RefCounter <= RefCounter + Counter;
             RefCounter <= temp3;
-            Counter <= 1'b1;
+            Counter <= 1'b0;
             //D <= refD - refd*Counter;
             D <= temp2;
             refD <= temp2;        
-            end else begin 
+          end else begin 
             /// Sum of Counter values will be output.
              Q <= RefCounter;
              ready <= 1'b1;
              s <= START;
-           end
+          end
         end
       end
     end
   end
   
-  bit [N-1:0] temp1, temp2, temp3;
+  
   
   Mul M(
     .A(refd),
@@ -101,7 +114,7 @@ module divider#(parameter N=16)(
   );
   
   
-  Rshift R(
+  Rshift Rs(
     .i(D),
     .o(Dr)
   );
@@ -113,7 +126,7 @@ module Add#(parameter N=16)(
   input [N-1] B,
   output reg [N-1] O
 );
-  O = A+B;
+  assign O = A+B;
 endmodule
 
 module Sub#(parameter N=16)(
@@ -121,10 +134,10 @@ module Sub#(parameter N=16)(
   input [N-1] B,
   output reg [N-1] O
 );
-  O = A-B;
+  assign O = A-B;
 endmodule
 
-module Mul#(paramter N=16)(
+module Mul#(parameter N=16)(
   input [N-1] A,
   input [N-1] B,
   output reg [N-1] O
@@ -147,7 +160,7 @@ module GE#(parameter N=16)(
   
 endmodule
 
-module RShift#(parameter N=16)(
+module Rshift#(parameter N=16)(
   input [N-1:0] i,
   output [N-1:0] o
 );
