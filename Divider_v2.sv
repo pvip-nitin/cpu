@@ -1,5 +1,5 @@
 //Divider
-
+// https://edaplayground.com/x/nR3r
 module Divider#(parameter N=16)(
   input clk,
   input rstn,
