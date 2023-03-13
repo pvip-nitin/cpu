@@ -1,4 +1,5 @@
 // Code your design here
+// https://edaplayground.com/x/rDbk
 module multi_shift#(parameter N=16)(
   input [N-1:0] x,
   input [N-1:0] s,
