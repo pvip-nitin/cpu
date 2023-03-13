@@ -23,9 +23,6 @@ module MUL#(parameter N=16)(
   wire [N][2*N-1:0] temp2;// [N];
   wire [N][2*N-1:0] temp3;// [N];
   
-  
-  
-  
   zExtend#(N) zE(
     .i(A),
     .o(temp[0])
