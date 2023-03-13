@@ -1,4 +1,3 @@
-#include "Divider.sv"
 // Code your testbench here
 // or browse Examples
 
@@ -40,12 +39,9 @@ module top;
     req = 1;
     D = 16'hFFFF;
     d = 2;
-    @(posedge clk);
-    @(posedge clk);
-    req = 0;
     fork 
       @(posedge ready);
-      repeat(1000) begin
+      repeat(10000) begin
         @(posedge clk);
       end
     join_any
