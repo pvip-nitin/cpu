@@ -1,5 +1,6 @@
 // Code your design here
 //Full Adder
+// https://edaplayground.com/x/aFya
 module full_adder #(parameter N=16)
   (
     input [N-1:0] A,
